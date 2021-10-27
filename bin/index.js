@@ -35,8 +35,17 @@ var cx2Js = new CxToJs(utils);
 // initialize cytoscape.js
 var cy = cytoscape({});
 
+
 // add the elements from the CX file into cytoscape.js
 var eles = cy.add(cx2Js.cyElementsFromNiceCX(niceCX, {}));
+var nodes = cy.filter('node');
+var num_nodes = nodes.length;
+var node_size = 75.0
+var box_size = Math.sqrt(node_size*node_size*num_nodes);
+
+if (box_size < 500.0){
+  box_size = 500;
+}
 
 // function called when layout completed
 var ready_func = function() {
@@ -62,8 +71,8 @@ var layout = cy.layout({
     name: layout,
     boundingBox: { x1: 0,
                    y1: 0,
-                   w: 500,
-                   h: 500},
+                   w: box_size,
+                   h: box_size},
     ready: ready_func 
 
 });
