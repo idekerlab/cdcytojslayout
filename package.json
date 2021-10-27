@@ -1,0 +1,20 @@
+{
+  "name": "cdcytojslayout",
+  "version": "0.0.1",
+  "description": "Runs Cytoscape JS layouts on command line",
+  "main": "bin/index.js",
+  "bin": {
+    "cdcytojslayout": "./bin/index.js"
+  },
+  "dependencies": {
+    "argparse": "^2.0.1",
+    "cytoscape": "^3.20.0",
+    "cytoscape-cx2js": "^0.6.6"
+  },
+  "scripts": {
+    "test": "echo \"no tests\"",
+    "dockerbuild": "docker build --no-cache -t coleslawndex/cdcytojslayout:0.0.1 -f docker/Dockerfile ."
+  },
+  "author": "Christopher Churas",
+  "license": "MIT"
+}
