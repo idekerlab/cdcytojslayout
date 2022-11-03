@@ -2,6 +2,7 @@ FROM node:slim
 
 RUN npm install -g cytoscape
 RUN npm install -g argparse
+RUN npm install -g cytoscape-dagre
 
 RUN mkdir /tmp/cdcytojslayout
 COPY package.json /tmp/cdcytojslayout

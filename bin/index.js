@@ -7,6 +7,10 @@ const fs = require('fs');
 
 var cytoscape = require('cytoscape');
 
+var dagre = require('cytoscape-dagre');
+
+cytoscape.use( dagre ); // register extension
+
 const { CxToJs, CyNetworkUtils } = require('cytoscape-cx2js');
 
 const parser = new ArgumentParser({
@@ -15,7 +19,7 @@ const parser = new ArgumentParser({
 
 parser.add_argument('input', {help: 'File of Network in CX format'});
 parser.add_argument('--version', { action: 'version', version });
-parser.add_argument('--layout', { choices: ['cose', 'grid', 'circle', 'concentric', 'breadthfirst'],
+parser.add_argument('--layout', { choices: ['cose', 'grid', 'circle', 'concentric', 'breadthfirst', 'dagre'],
                                   default: 'cose',
                                   help: 'Layout algorithm to run'});
 
