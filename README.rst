@@ -8,4 +8,4 @@ To build
 
 .. code-block::
 
-   docker build -t coleslawndex/cdcytojslayout:0.0.2 -f docker/Dockerfile .
+   docker build -t coleslawndex/cdcytojslayout:0.0.3 -f docker/Dockerfile .
