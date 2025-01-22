@@ -22,6 +22,8 @@ parser.add_argument('--version', { action: 'version', version });
 parser.add_argument('--layout', { choices: ['cose', 'grid', 'circle', 'concentric', 'breadthfirst', 'dagre'],
                                   default: 'cose',
                                   help: 'Layout algorithm to run'});
+parser.add_argument('--outputcx', { action: 'store_true',
+                                    help: 'Output the updated CX object with new layout coordinates'});
 
 var args = parser.parse_args();
 
@@ -51,24 +53,80 @@ if (box_size < 500.0){
   box_size = 500;
 }
 
+function writeAndExit(data, callback) {
+  const ok = process.stdout.write(data, () => {
+      // This callback is called once the write is complete
+      if (callback) {
+          callback();
+      }
+  });
+
+  if (!ok) {
+      // If the buffer is full, wait for the 'drain' event
+      process.stdout.once('drain', () => {
+          if (callback) {
+              callback();
+          }
+      });
+  }
+}
+
 // function called when layout completed
 var ready_func = function() {
-   var first = true;
-   process.stdout.write('[\n');
-   for (const n of cy.json().elements.nodes){
-        if (first === true){
-           first = false;
-        } else {
-          process.stdout.write(',\n');
+  let foundCartesianLayout = false;
+  if (args.outputcx) {
+      
+      let cartesianLayout = [];
+      for (const n of cy.json().elements.nodes) {
+          cartesianLayout.push({
+              node: n.data.id,
+              x: n.position.x,
+              y: n.position.y
+          });
+      }
+      for (let i = rawCX.length - 1; i >= 0; i--){
+        let aspectKeys = Array.from(Object.keys(rawCX[i]));
+        if (aspectKeys.includes('metaData')){
+          continue;
         }
-        process.stdout.write(JSON.stringify({ node: n.data.id,
-                                            x: n.position.x,
-                                            y: n.position.y}));
-    }
-    process.stdout.write('\n]\n');
-    process.exit(0);
+        if (aspectKeys.includes('cartesianLayout')){
+          rawCX[i].cartesianLayout = cartesianLayout;
+          foundCartesianLayout = true;
+        }
+      }
+      // Prepare cartesianLayout aspect
+      if (foundCartesianLayout == false){
+         rawCX.push(cartesianLayout);
+      }
+      //console.log(rawCX);
+      //rawCX.cartesianLayout = cartesianayout;
+      // Output updated niceCX object
+      //process.stdout.write(JSON.stringify(rawCX, null, null));
+      //process.stdout.write('\n');
+      //process.stdout.write('\n');
+      writeAndExit(JSON.stringify(rawCX, null, 2), () => {
+        process.exit(0);
+      });
+  } else {
+      var first = true;
+      process.stdout.write('[\n');
+      for (const n of cy.json().elements.nodes){
+            if (first === true){
+              first = false;
+            } else {
+              process.stdout.write(',\n');
+            }
+            writeAndExit(JSON.stringify({ node: n.data.id,
+                                                x: n.position.x,
+                                                y: n.position.y}) + '\n]\n', () => {
+                                                  process.exit(0);
+                                                });
+        }
 
+  }
+    
 };
+
 
 // configure the layout
 var layout = cy.layout({
